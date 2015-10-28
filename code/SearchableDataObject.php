@@ -73,7 +73,11 @@ class SearchableDataObject extends DataExtension {
 												OwnerClassName varchar(255) NOT NULL,
 												PRIMARY KEY(ID, ClassName)
 											) ENGINE=MyISAM");
-	DB::query("ALTER TABLE SearchableDataObjects ADD FULLTEXT (`Title` ,`Content`)");
+
+    $count = DB::query("SELECT COUNT(1) FROM INFORMATION_SCHEMA.STATISTICS WHERE table_schema=DATABASE() AND table_name='SearchableDataObjects' AND index_name='Title'")->value();
+    if($count == 0){
+      DB::query("ALTER TABLE SearchableDataObjects ADD FULLTEXT Title (`Title` ,`Content`)");
+  }
   }
 
 }
