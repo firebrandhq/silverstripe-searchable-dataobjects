@@ -49,6 +49,21 @@ class CustomSearch extends Extension {
 	 * @param SS_HTTPRequest $request Request generated for this action
 	 */
 	public function getSearchResults($request) {
+	    
+	    $getVars = $request->getVars();
+        // set language (if present)
+        if(class_exists('Translatable')) {
+            if(singleton('SiteTree')->hasExtension('Translatable') && isset( $getVars['searchlocale'])) {
+                if($getVars['searchlocale'] == "ALL") {
+                    Translatable::disable_locale_filter();
+                } else {
+                    $origLocale = Translatable::get_current_locale();
+
+                    Translatable::set_current_locale($getVars['searchlocale']);
+                    $searchLocale = $getVars['searchlocale'];
+                }
+            }
+        }
 
 		$list = new ArrayList();
 
@@ -93,7 +108,15 @@ EOF
 			$do->Title = $row['Title'];
 			$do->Content = $row['Content'];
 
-			$list->push($do);
+			if(class_exists('Translatable') && isset($searchLocale)) {
+
+                if(isset($do->Locale) && $do->Locale == $searchLocale) {
+                    $list->push($do);
+                }
+
+            } else {
+                $list->push($do);
+            }
 		}
 
 		$pageLength = Config::inst()->get('CustomSearch', 'items_per_page');
