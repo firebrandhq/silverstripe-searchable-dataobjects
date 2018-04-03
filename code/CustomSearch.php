@@ -107,7 +107,7 @@ EOF
 
 		$data = array(
 				'Results' => $this->getSearchResults($request),
-				'Query' => $form->getSearchQuery(),
+				'Query' => filter_var($form->getSearchQuery(), FILTER_SANITIZE_STRING),
 				'Title' => _t('Search_results', 'Search Results')
 		);
 		return $this->owner->customise($data)->renderWith(array('Page_results', 'Page'));
