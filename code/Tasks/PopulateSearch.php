@@ -105,7 +105,12 @@ class PopulateSearch extends BuildTask {
 	 */
 	public function run($request) {
 		$this->clearTable();
-				
+		
+		// set language (if present)
+        if(class_exists('Translatable')) {
+            Translatable::disable_locale_filter();
+        }
+        
 		/*
 		 * Page
 		 */
